@@ -113,7 +113,9 @@ _nginx_build() {
     --with-openssl=${DIR}/lib/openssl \
     --with-openssl-opt='enable-ec_nistp_64_gcc_128 enable-weak-ssl-ciphers no-ssl3 -march=native -ljemalloc -Wl,-flto' \
     --with-zlib=${DIR}/lib/zlib \
+    --with-zlib-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
     --with-pcre=${DIR}/lib/pcre \
+    --with-pcre-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
     --with-pcre-jit \
     --prefix=/usr/share/nginx \
     --sbin-path=/usr/sbin/nginx \
