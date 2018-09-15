@@ -194,4 +194,6 @@ _nginx_upgrade() {
 }
 
 _nginx_build
-_nginx_install
+if [ ! -f "/usr/sbin/nginx" ]; then
+    _nginx_install
+fi
