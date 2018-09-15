@@ -1,0 +1,7 @@
+language: generic
+
+sudo: true
+
+script: 
+  - chmod +x ./setup.sh
+  - echo 1 | sudo ./setup.sh
