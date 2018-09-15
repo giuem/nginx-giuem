@@ -43,7 +43,7 @@ _brotli() {
 _zilb() {
     cd ${DIR}/lib
     git -C zlib pull || git clone https://github.com/cloudflare/zlib
-    # cd zlib && ./configure
+    cd zlib && ./configure
 }
 
 _pcre() {
