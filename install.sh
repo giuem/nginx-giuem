@@ -58,7 +58,7 @@ _brotli() {
 _zilb() {
     pushd lib
     git -C zlib pull || git clone https://github.com/cloudflare/zlib
-    # cd zlib && ./configure
+    pushd zlib && ./configure && popd
     popd
 }
 
@@ -219,7 +219,7 @@ KillMode=mixed
 [Install]
 WantedBy=multi-user.target
 EOF
-    cp -rf conf/* /etc/nginx/
+    cp -rf ../conf/* /etc/nginx/
     systemctl enable nginx.service
     systemctl start nginx.service
 }
