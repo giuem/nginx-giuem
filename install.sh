@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 NGINX=1.15.3
@@ -10,9 +10,18 @@ DIR="$( cd "$( dirname "$0" )" && pwd )/.nginx"
 CPUS=$(($(grep -c ^processor /proc/cpuinfo)+1))
 MAKE_THREAD=" -j$CPUS "
 mkdir -p ${DIR}/patch ${DIR}/lib ${DIR}/src
+cd $DIR
 
 command_exists() {
     command -v "$@" > /dev/null 2>&1
+}
+
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
 }
 
 _install_dependencies() {
@@ -22,69 +31,89 @@ _install_dependencies() {
 }
 
 _download_patch() {
-    cd ${DIR}/patch
+    pushd patch
     git -C hakasenyang pull || git clone https://github.com/hakasenyang/openssl-patch.git hakasenyang
     git -C kn007 pull || git clone https://github.com/kn007/patch.git kn007
+    popd
 }
 
 _openssl() {
-    cd ${DIR}/lib
-    wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz && tar zxf openssl-${OPENSSL}.tar.gz && rm openssl-${OPENSSL}.tar.gz && cd openssl-${OPENSSL}
-    patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
-    cd ../ && rm -rf openssl && mv openssl-${OPENSSL} openssl
+    pushd lib
+    if [ ! -d "openssl-${OPENSSL}" ]; then
+        # remove old version
+        rm -rf openssl-*
+        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz && tar zxf openssl-${OPENSSL}.tar.gz && rm openssl-${OPENSSL}.tar.gz && cd openssl-${OPENSSL}
+        patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
+    fi
+    popd
 }
 
 _brotli() {
-    cd ${DIR}/lib
+    pushd lib
     git -C ngx_brotli pull ||git clone https://github.com/eustas/ngx_brotli
     cd ngx_brotli && git submodule update --init
+    popd
 }
 
 _zilb() {
-    cd ${DIR}/lib
+    pushd lib
     git -C zlib pull || git clone https://github.com/cloudflare/zlib
-    cd zlib && ./configure
+    # cd zlib && ./configure
+    popd
 }
 
 _pcre() {
-    cd ${DIR}/lib
-    wget -cnv https://ftp.pcre.org/pub/pcre/pcre-${PCRE}.zip && unzip -q pcre-${PCRE}.zip && rm pcre-${PCRE}.zip
-    cd pcre-${PCRE} && cd ../ && rm -rf pcre && mv pcre-${PCRE} pcre
+    pushd lib
+    if [ ! -d pcre-${PCRE} ]; then
+        rm -rf pcre-*
+        wget -cnv https://ftp.pcre.org/pub/pcre/pcre-${PCRE}.zip && unzip -q pcre-${PCRE}.zip && rm pcre-${PCRE}.zip
+        # cd pcre-${PCRE} && cd ../ && rm -rf pcre && mv pcre-${PCRE} pcre
+    fi
+    popd
 }
 
 _jemalloc() {
-    cd ${DIR}/lib
-    wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2 && cd jemalloc-${JEMALLOC}
-    ./configure && make ${MAKE_THREAD} && make install
-    echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-    ldconfig && cd ../
+    pushd lib    
+    if [ ! -f '/usr/local/lib/libjemalloc.so' ] || \
+        [ $(strings /usr/local/lib/libjemalloc.so | grep -c "JEMALLOC_VERSION \"${JEMALLOC}") = 0 ]; then
+        wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2 && cd jemalloc-${JEMALLOC}
+        ./configure && make ${MAKE_THREAD} && make install
+        echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+        ldconfig && cd ../
+    fi
+    popd
 }
 
 _ngx_ct() {
-    cd ${DIR}/lib
+    pushd lib
     git -C nginx-ct pull || git clone https://github.com/grahamedgecombe/nginx-ct.git
+    popd
 }
 
 _ngx_devel_kit() {
-    cd ${DIR}/lib
+    pushd lib
     git -C ngx_devel_kit pull || git clone https://github.com/simpl/ngx_devel_kit.git
+    popd
 }
 
 _ngx_geoip() {
-    cd ${DIR}/lib
+    pushd lib
     add-apt-repository ppa:maxmind/ppa -y
     apt update && apt install libmaxminddb0 libmaxminddb-dev mmdb-bin
     git -C ngx_http_geoip2_module pull || git clone https://github.com/leev/ngx_http_geoip2_module.git
+    popd
 }
 
 _ngx_header_more() {
-    cd ${DIR}/lib
+    pushd lib
     git -C headers-more-nginx-module pull || git clone https://github.com/openresty/headers-more-nginx-module.git
+    popd
 }
 
 _ngx_cache_purge() {
-    cd ${DIR}/lib
+    pushd lib
     git -C ngx_cache_purge pull || git clone https://github.com/nginx-modules/ngx_cache_purge.git
+    popd
 }
 
 _nginx_build() {
@@ -102,7 +131,8 @@ _nginx_build() {
     _ngx_header_more
     _ngx_cache_purge
 
-    wget -cnv "https://nginx.org/download/nginx-${NGINX}.tar.gz" -O nginx-${NGINX}.tar.gz && tar zxf nginx-${NGINX}.tar.gz && rm -rf ${DIR}/src nginx-${NGINX}.tar.gz && mv nginx-${NGINX} ${DIR}/src && cd ${DIR}/src
+    wget -cnv "https://nginx.org/download/nginx-${NGINX}.tar.gz" -O nginx-${NGINX}.tar.gz && tar zxf nginx-${NGINX}.tar.gz && rm -rf ${DIR}/src nginx-${NGINX}.tar.gz && mv nginx-${NGINX} ${DIR}/src
+    pushd src
     patch -p1 < ${DIR}/patch/kn007/nginx.patch
     patch -p1 < ${DIR}/patch/kn007/nginx_auto_using_PRIORITIZE_CHACHA.patch
     # patch -p1 < ${DIR}/patch/hakasenyang/remove_nginx_server_header.patch
@@ -110,11 +140,11 @@ _nginx_build() {
     ./configure --build=nginx-giuem \
     --with-cc-opt='-m64 -march=native -DTCP_FASTOPEN=23 -g -O3 -fPIE -fstack-protector-strong -flto -fuse-ld=gold --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wno-unused-parameter -fno-strict-aliasing -fPIC -D_FORTIFY_SOURCE=2 -gsplit-dwarf' \
     --with-ld-opt='-L/usr/local/lib -lrt -ljemalloc -Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now -fPIC' \
-    --with-openssl=${DIR}/lib/openssl \
+    --with-openssl=${DIR}/lib/openssl-${OPENSSL} \
     --with-openssl-opt='enable-ec_nistp_64_gcc_128 enable-weak-ssl-ciphers no-ssl3 -march=native -ljemalloc -Wl,-flto' \
     --with-zlib=${DIR}/lib/zlib \
     --with-zlib-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
-    --with-pcre=${DIR}/lib/pcre \
+    --with-pcre=${DIR}/lib/pcre-${PCRE} \
     --with-pcre-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
     --with-pcre-jit \
     --prefix=/usr/share/nginx \
@@ -161,11 +191,14 @@ _nginx_build() {
     --add-module=${DIR}/lib/ngx_cache_purge
 
     make ${MAKE_THREAD}
+    popd
 }
 
 _nginx_install() {
-    cd ${DIR}/src
+    pushd src
     make install
+    popd
+
     mkdir -p /var/lib/nginx/body
     cat > /lib/systemd/system/nginx.service <<EOF
 [Unit]
@@ -191,11 +224,21 @@ EOF
 }
 
 _nginx_upgrade() {
-    cd ${DIR}/src
-    make upgrade
+    pushd src
+    echo "Upgrade Nginx..."
+    mv /usr/sbin/nginx /usr/sbin/nginx.oldbin
+    mv objs/nginx /usr/sbin/nginx
+    /usr/sbin/nginx -t
+    kill -USR2 `cat /run/nginx.pid`
+    sleep 1
+    test -f /run/nginx.pid.oldbin
+    kill -QUIT `cat /run/nginx.pid.oldbin`
+    popd
 }
 
 _nginx_build
 if [ ! -f "/usr/sbin/nginx" ]; then
     _nginx_install
+else
+    _nginx_upgrade
 fi
