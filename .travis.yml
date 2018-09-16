@@ -1,9 +1,12 @@
 language: generic
+services:
+  - docker
 
 sudo: true
 
+before_install:
+  - docker pull ubuntu:18.04
+  - docker pull ubuntu:16.04
+
 script: 
-  - chmod +x ./install.sh
-  - sudo ./install.sh
-  - sudo systemctl is-enabled nginx
-  - sudo systemctl is-active nginx
+  - docker run --rm -it -v $(pwd):/ci ubuntu:18.04 bash -c "cd /ci; ./install.sh"

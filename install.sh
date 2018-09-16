@@ -220,8 +220,9 @@ KillMode=mixed
 WantedBy=multi-user.target
 EOF
     cp -rf ../conf/* /etc/nginx/
-    systemctl enable nginx.service
-    systemctl start nginx.service
+    echo "Installed, run following commands to start Nginx:"
+    echo "systemctl enable nginx.service"
+    echo "systemctl start nginx.service"
 }
 
 _nginx_upgrade() {
