@@ -4,6 +4,6 @@ sudo: true
 
 script: 
   - chmod +x ./install.sh
-  - sudo ./setup.sh
+  - sudo ./install.sh
   - sudo systemctl is-enabled nginx
   - sudo systemctl is-active nginx
