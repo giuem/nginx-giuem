@@ -25,7 +25,7 @@ popd () {
 }
 
 _install_dependencies() {
-    pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev" > /dev/null
+    pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget" > /dev/null
     apt-get update -q && apt-get install -y -q ${pre_reqs} > /dev/null
     echo "install dependencies done"
 }
@@ -219,6 +219,7 @@ KillMode=mixed
 [Install]
 WantedBy=multi-user.target
 EOF
+    cp -rf conf/* /etc/nginx/
     systemctl enable nginx.service
     systemctl start nginx.service
 }
