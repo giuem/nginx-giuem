@@ -3,5 +3,7 @@ language: generic
 sudo: true
 
 script: 
-  - chmod +x ./setup.sh
-  - echo 1 | sudo ./setup.sh
+  - chmod +x ./install.sh
+  - sudo ./setup.sh
+  - sudo systemctl is-enabled nginx
+  - sudo systemctl is-active nginx
