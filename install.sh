@@ -241,5 +241,12 @@ _nginx_build
 if [ ! -f "/usr/sbin/nginx" ]; then
     _nginx_install
 else
-    _nginx_upgrade
+    read -r -p "Do you want to upgrade Nginx? [y/N] " response
+    case "$response" in
+        [yY][eE][sS]|[yY])
+            _nginx_upgrade
+            ;;
+        *)
+            ;;
+    esac
 fi
