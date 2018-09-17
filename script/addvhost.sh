@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 DOMAIN=$1
 if [ -e ${DOMAIN} ]; then
@@ -20,6 +21,7 @@ server {
     # ssl_certificate_key  ssl/${DOMAIN}.key;
 
     include snipatse/tls-1.3.conf;
+    include snipatse/allow-methods.conf;
     # ...
 }
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo "#Cloudflare" > /etc/nginx/conf.d/00_real_ip_cloudflare_00.conf;
 for i in `curl https://www.cloudflare.com/ips-v4`; do
