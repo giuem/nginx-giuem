@@ -220,6 +220,7 @@ KillMode=mixed
 WantedBy=multi-user.target
 EOF
     cp -rf ../conf/* /etc/nginx/
+    /usr/sbin/nginx -t
     echo "Installed, run following commands to start Nginx:"
     echo "systemctl enable nginx.service"
     echo "systemctl start nginx.service"
