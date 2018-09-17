@@ -25,8 +25,8 @@ popd () {
 }
 
 _install_dependencies() {
-    pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget" > /dev/null
-    apt-get update -q && apt-get install -y -q ${pre_reqs} > /dev/null
+    pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
+    apt-get update -qq > /dev/null && apt-get install -y -qq ${pre_reqs} > /dev/null
     echo "install dependencies done"
 }
 
@@ -42,8 +42,10 @@ _openssl() {
     if [ ! -d "openssl-${OPENSSL}" ]; then
         # remove old version
         rm -rf openssl-*
-        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz && tar zxf openssl-${OPENSSL}.tar.gz && rm openssl-${OPENSSL}.tar.gz && cd openssl-${OPENSSL}
+        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz && tar zxf openssl-${OPENSSL}.tar.gz && rm openssl-${OPENSSL}.tar.gz
+        pushd openssl-${OPENSSL}
         patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
+        popd
     fi
     popd
 }
@@ -51,7 +53,9 @@ _openssl() {
 _brotli() {
     pushd lib
     git -C ngx_brotli pull ||git clone https://github.com/eustas/ngx_brotli
-    cd ngx_brotli && git submodule update --init
+    pushd ngx_brotli
+    git submodule update --init
+    popd
     popd
 }
 
@@ -76,10 +80,12 @@ _jemalloc() {
     pushd lib    
     if [ ! -f '/usr/local/lib/libjemalloc.so' ] || \
         [ $(strings /usr/local/lib/libjemalloc.so | grep -c "JEMALLOC_VERSION \"${JEMALLOC}") = 0 ]; then
-        wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2 && cd jemalloc-${JEMALLOC}
+        wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2
+        pushd jemalloc-${JEMALLOC}
         ./configure && make ${MAKE_THREAD} && make install
         echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-        ldconfig && cd ../
+        ldconfig
+        popd
     fi
     popd
 }
@@ -219,7 +225,7 @@ KillMode=mixed
 [Install]
 WantedBy=multi-user.target
 EOF
-    cp -rf ../conf/* /etc/nginx/
+    yes | cp -rf ../conf/* /etc/nginx/
     /usr/sbin/nginx -t
     echo "Installed, run following commands to start Nginx:"
     echo "systemctl enable nginx.service"
@@ -231,6 +237,7 @@ _nginx_upgrade() {
     echo "Upgrade Nginx..."
     mv /usr/sbin/nginx /usr/sbin/nginx.oldbin
     mv objs/nginx /usr/sbin/nginx
+    cp -irf ../conf/* /etc/nginx/
     /usr/sbin/nginx -t
     kill -USR2 `cat /run/nginx.pid`
     sleep 1
