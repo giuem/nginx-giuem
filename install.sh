@@ -83,7 +83,7 @@ _jemalloc() {
         [ $(strings /usr/local/lib/libjemalloc.so | grep -c "JEMALLOC_VERSION \"${JEMALLOC}") = 0 ]; then
         wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2
         pushd jemalloc-${JEMALLOC}
-        ./configure && make ${MAKE_THREAD} && make install
+        ./configure && make ${MAKE_THREAD} > /dev/null && make install
         echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
         ldconfig
         popd
@@ -198,7 +198,7 @@ _nginx_build() {
     --add-module=${DIR}/lib/ngx_devel_kit \
     --add-module=${DIR}/lib/ngx_cache_purge
 
-    make ${MAKE_THREAD}
+    make ${MAKE_THREAD} > /dev/null
     popd
 }
 
