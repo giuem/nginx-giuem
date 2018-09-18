@@ -63,7 +63,7 @@ _brotli() {
 _zilb() {
     pushd lib
     git -C zlib pull || git clone https://github.com/cloudflare/zlib
-    pushd zlib && ./configure && popd
+    pushd zlib && ./configure --64 && popd
     popd
 }
 
