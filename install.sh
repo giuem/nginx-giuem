@@ -233,17 +233,15 @@ EOF
 }
 
 _nginx_upgrade() {
-    pushd src
     echo "Upgrade Nginx..."
     mv /usr/sbin/nginx /usr/sbin/nginx.oldbin
-    mv objs/nginx /usr/sbin/nginx
+    mv src/objs/nginx /usr/sbin/nginx
     cp -irf ../conf/* /etc/nginx/
     /usr/sbin/nginx -t
     kill -USR2 `cat /run/nginx.pid`
     sleep 1
     test -f /run/nginx.pid.oldbin
-    kill -QUIT `cat /run/nginx.pid.oldbin`
-    popd
+    kill -QUIT `cat /run/nginx.pid.oldbin`    
 }
 
 _nginx_build
