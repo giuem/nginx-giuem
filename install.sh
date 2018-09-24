@@ -9,6 +9,7 @@ JEMALLOC=5.1.0
 DIR="$( cd "$( dirname "$0" )" && pwd )/.nginx"
 CPUS=$(($(grep -c ^processor /proc/cpuinfo)+1))
 MAKE_THREAD=" -j$CPUS "
+NGINX_MODULES=""
 mkdir -p ${DIR}/patch ${DIR}/lib ${DIR}/src
 cd $DIR
 
@@ -58,6 +59,7 @@ _brotli() {
     git submodule update --init
     popd
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_brotli"
 }
 
 _zilb() {
@@ -95,12 +97,14 @@ _ngx_ct() {
     pushd lib
     git -C nginx-ct pull || git clone https://github.com/grahamedgecombe/nginx-ct.git
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx-ct"
 }
 
 _ngx_devel_kit() {
     pushd lib
     git -C ngx_devel_kit pull || git clone https://github.com/simpl/ngx_devel_kit.git
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_devel_kit"
 }
 
 _ngx_geoip() {
@@ -109,18 +113,21 @@ _ngx_geoip() {
     apt update && apt install libmaxminddb0 libmaxminddb-dev mmdb-bin
     git -C ngx_http_geoip2_module pull || git clone https://github.com/leev/ngx_http_geoip2_module.git
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_http_geoip2_module"
 }
 
 _ngx_header_more() {
     pushd lib
     git -C headers-more-nginx-module pull || git clone https://github.com/openresty/headers-more-nginx-module.git
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/headers-more-nginx-module"
 }
 
 _ngx_cache_purge() {
     pushd lib
     git -C ngx_cache_purge pull || git clone https://github.com/nginx-modules/ngx_cache_purge.git
     popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_cache_purge"
 }
 
 _nginx_build() {
@@ -193,10 +200,7 @@ _nginx_build() {
     --with-http_slice_module \
     --with-http_stub_status_module \
     --without-mail_pop3_module --without-mail_imap_module --without-mail_smtp_module \
-    --add-module=${DIR}/lib/ngx_brotli \
-    --add-module=${DIR}/lib/headers-more-nginx-module \
-    --add-module=${DIR}/lib/ngx_devel_kit \
-    --add-module=${DIR}/lib/ngx_cache_purge
+    ${NGINX_MODULES}
 
     make ${MAKE_THREAD} > /dev/null
     popd
