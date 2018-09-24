@@ -18,4 +18,4 @@ matrix:
 before_install:
   - docker pull ${DISTRO}
 script: 
-  - docker run --rm -it -v $(pwd):/ci ${DISTRO} bash -c "cd /ci; ./install.sh"
+  - docker run --rm -it -w "/ci" -v $(pwd):/ci ${DISTRO} bash -c "./install.sh"
