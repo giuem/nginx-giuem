@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+
 NGINX=1.15.3
 OPENSSL=1.1.1
 PCRE=8.42
@@ -130,6 +132,13 @@ _ngx_cache_purge() {
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_cache_purge"
 }
 
+_ngx_echo() {
+    pushd lib
+    git -C echo-nginx-module pull || git clone https://github.com/openresty/echo-nginx-module.git
+    popd
+    NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/echo-nginx-module"
+}
+
 _nginx_build() {
     _install_dependencies
     _download_patch
@@ -144,6 +153,7 @@ _nginx_build() {
     _ngx_devel_kit
     _ngx_header_more
     _ngx_cache_purge
+    _ngx_echo
 
     wget -cnv "https://nginx.org/download/nginx-${NGINX}.tar.gz" -O nginx-${NGINX}.tar.gz && tar zxf nginx-${NGINX}.tar.gz && rm -rf ${DIR}/src nginx-${NGINX}.tar.gz && mv nginx-${NGINX} ${DIR}/src
     pushd src
