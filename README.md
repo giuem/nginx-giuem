@@ -1,6 +1,12 @@
 # Nginx for GIUEM
 
+[![Travis (.com)](https://img.shields.io/travis/com/giuem/nginx-giuem.svg?style=flat-square)](https://travis-ci.com/giuem/nginx-giuem)
+[![SSLLabs](https://img.shields.io/badge/SSLLabs-A%2B-brightgreen.svg?style=flat-square)](https://www.ssllabs.com/ssltest/analyze.html?d=ssl.giuem.com)
+[![GitHub](https://img.shields.io/github/license/giuem/nginx-giuem.svg?style=flat-square)](https://github.com/giuem/nginx-giuem/blob/master/LICENSE)
+
 GIUEM's Nginx build scripts and configuration. 
+
+Test page: [https://ssl.giuem.com](https://ssl.giuem.com)
 
 ## Overview
 
@@ -20,6 +26,7 @@ GIUEM's Nginx build scripts and configuration.
   * ngx_devel_kit
   * ngx_headers_more
   * ngx_cache_purge
+  * ngx_http_echo
 * *Some optimizations that have not been tested*
 
 ## Supported Distributions
