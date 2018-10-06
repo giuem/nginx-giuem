@@ -15,6 +15,7 @@ Test page: [https://ssl.giuem.com](https://ssl.giuem.com)
   * HTTP2 HPACK Encoding
   * Dynamic TLS Record
   * Auto using SSL_OP_PRIORITIZE_CHACHA
+  * Strict SNI (You need to configure at least two ssl servers. If you have only one server, create another as placeholder)
 * **OpenSSL: 1.1.1**
   * TLS 1.3 (draft 23, 26, 28, final)
   * BoringSSL's Equal Preference Patch
