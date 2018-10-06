@@ -29,7 +29,8 @@ popd () {
 
 _install_dependencies() {
     pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
-    apt-get update -qq > /dev/null && apt-get install -y -qq ${pre_reqs} > /dev/null
+    apt-get update -qq > /dev/null
+    apt-get install -y -qq ${pre_reqs} > /dev/null
     echo "install dependencies done"
 }
 
@@ -45,7 +46,9 @@ _openssl() {
     if [ ! -d "openssl-${OPENSSL}" ]; then
         # remove old version
         rm -rf openssl-*
-        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz && tar zxf openssl-${OPENSSL}.tar.gz && rm openssl-${OPENSSL}.tar.gz
+        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz
+        tar zxf openssl-${OPENSSL}.tar.gz
+        rm openssl-${OPENSSL}.tar.gz
     fi
     pushd openssl-${OPENSSL}
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
@@ -68,7 +71,9 @@ _brotli() {
 _zilb() {
     pushd lib
     git -C zlib pull || git clone https://github.com/cloudflare/zlib
-    pushd zlib && ./configure --64 && popd
+    pushd zlib
+    ./configure --64
+    popd
     popd
 }
 
@@ -76,7 +81,9 @@ _pcre() {
     pushd lib
     if [ ! -d pcre-${PCRE} ]; then
         rm -rf pcre-*
-        wget -cnv https://ftp.pcre.org/pub/pcre/pcre-${PCRE}.zip && unzip -q pcre-${PCRE}.zip && rm pcre-${PCRE}.zip
+        wget -cnv https://ftp.pcre.org/pub/pcre/pcre-${PCRE}.zip
+        unzip -q pcre-${PCRE}.zip
+        rm pcre-${PCRE}.zip
         # cd pcre-${PCRE} && cd ../ && rm -rf pcre && mv pcre-${PCRE} pcre
     fi
     popd
@@ -86,9 +93,13 @@ _jemalloc() {
     pushd lib    
     if [ ! -f '/usr/local/lib/libjemalloc.so' ] || \
         [ $(strings /usr/local/lib/libjemalloc.so | grep -c "JEMALLOC_VERSION \"${JEMALLOC}") = 0 ]; then
-        wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2 && tar xjf jemalloc-${JEMALLOC}.tar.bz2 && rm jemalloc-${JEMALLOC}.tar.bz2
+        wget -cnv https://github.com/jemalloc/jemalloc/releases/download/${JEMALLOC}/jemalloc-${JEMALLOC}.tar.bz2
+        tar xjf jemalloc-${JEMALLOC}.tar.bz2
+        rm jemalloc-${JEMALLOC}.tar.bz2
         pushd jemalloc-${JEMALLOC}
-        ./configure && make ${MAKE_THREAD} > /dev/null && make install
+        ./configure
+        make ${MAKE_THREAD} > /dev/null
+        make install
         echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
         ldconfig
         popd
@@ -113,7 +124,8 @@ _ngx_devel_kit() {
 _ngx_geoip() {
     pushd lib
     add-apt-repository ppa:maxmind/ppa -y
-    apt update && apt install libmaxminddb0 libmaxminddb-dev mmdb-bin
+    apt-get update -qq > /dev/null
+    apt-get install libmaxminddb0 libmaxminddb-dev mmdb-bin -y -qq > /dev/null
     git -C ngx_http_geoip2_module pull || git clone https://github.com/leev/ngx_http_geoip2_module.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_http_geoip2_module"
@@ -156,7 +168,10 @@ _nginx_build() {
     _ngx_cache_purge
     _ngx_echo
 
-    wget -cnv "https://nginx.org/download/nginx-${NGINX}.tar.gz" -O nginx-${NGINX}.tar.gz && tar zxf nginx-${NGINX}.tar.gz && rm -rf ${DIR}/src nginx-${NGINX}.tar.gz && mv nginx-${NGINX} ${DIR}/src
+    wget -cnv "https://nginx.org/download/nginx-${NGINX}.tar.gz" -O nginx-${NGINX}.tar.gz
+    tar zxf nginx-${NGINX}.tar.gz
+    rm -rf ${DIR}/src nginx-${NGINX}.tar.gz
+    mv nginx-${NGINX} ${DIR}/src
     pushd src
     patch -p1 < ${DIR}/patch/kn007/nginx.patch
     patch -p1 < ${DIR}/patch/kn007/nginx_auto_using_PRIORITIZE_CHACHA.patch
