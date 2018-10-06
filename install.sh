@@ -27,6 +27,11 @@ popd () {
     command popd "$@" > /dev/null
 }
 
+sync_git_repo () {
+    git -C $1 fetch && git -C $1 reset --hard origin/master
+    return $?
+}
+
 _install_dependencies() {
     pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
     apt-get update -qq > /dev/null
@@ -36,8 +41,8 @@ _install_dependencies() {
 
 _download_patch() {
     pushd patch
-    git -C hakasenyang pull || git clone https://github.com/hakasenyang/openssl-patch.git hakasenyang
-    git -C kn007 pull || git clone https://github.com/kn007/patch.git kn007
+    sync_git_repo hakasenyang || git clone https://github.com/hakasenyang/openssl-patch.git hakasenyang
+    sync_git_repo kn007 || git clone https://github.com/kn007/patch.git kn007
     popd
 }
 
@@ -56,7 +61,7 @@ _openssl() {
 
 _brotli() {
     pushd lib
-    git -C ngx_brotli pull ||git clone https://github.com/eustas/ngx_brotli
+    sync_git_repo ngx_brotli ||git clone https://github.com/eustas/ngx_brotli
     pushd ngx_brotli
     git submodule update --init
     popd
@@ -66,7 +71,7 @@ _brotli() {
 
 _zilb() {
     pushd lib
-    git -C zlib pull || git clone https://github.com/cloudflare/zlib
+    sync_git_repo zlib || git clone https://github.com/cloudflare/zlib
     pushd zlib
     ./configure --64
     popd
@@ -105,14 +110,14 @@ _jemalloc() {
 
 _ngx_ct() {
     pushd lib
-    git -C nginx-ct pull || git clone https://github.com/grahamedgecombe/nginx-ct.git
+    sync_git_repo nginx-ct || git clone https://github.com/grahamedgecombe/nginx-ct.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx-ct"
 }
 
 _ngx_devel_kit() {
     pushd lib
-    git -C ngx_devel_kit pull || git clone https://github.com/simpl/ngx_devel_kit.git
+    sync_git_repo ngx_devel_kit || git clone https://github.com/simpl/ngx_devel_kit.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_devel_kit"
 }
@@ -122,28 +127,28 @@ _ngx_geoip() {
     add-apt-repository ppa:maxmind/ppa -y
     apt-get update -qq > /dev/null
     apt-get install libmaxminddb0 libmaxminddb-dev mmdb-bin -y -qq > /dev/null
-    git -C ngx_http_geoip2_module pull || git clone https://github.com/leev/ngx_http_geoip2_module.git
+    sync_git_repo ngx_http_geoip2_module || git clone https://github.com/leev/ngx_http_geoip2_module.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_http_geoip2_module"
 }
 
 _ngx_header_more() {
     pushd lib
-    git -C headers-more-nginx-module pull || git clone https://github.com/openresty/headers-more-nginx-module.git
+    sync_git_repo headers-more-nginx-module || git clone https://github.com/openresty/headers-more-nginx-module.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/headers-more-nginx-module"
 }
 
 _ngx_cache_purge() {
     pushd lib
-    git -C ngx_cache_purge pull || git clone https://github.com/nginx-modules/ngx_cache_purge.git
+    sync_git_repo ngx_cache_purge || git clone https://github.com/nginx-modules/ngx_cache_purge.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/ngx_cache_purge"
 }
 
 _ngx_echo() {
     pushd lib
-    git -C echo-nginx-module pull || git clone https://github.com/openresty/echo-nginx-module.git
+    sync_git_repo echo-nginx-module || git clone https://github.com/openresty/echo-nginx-module.git
     popd
     NGINX_MODULES="${NGINX_MODULES} --add-module=${DIR}/lib/echo-nginx-module"
 }
