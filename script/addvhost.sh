@@ -12,7 +12,7 @@ echo "Add new vhost: ${DOMAIN}"
 server {
     listen               443 ssl http2 spdy; # fastopen=3 reuseport;
     server_name          ${DOMAIN};
-
+    access_log           /var/log/nginx/${DOMAIN}.log main;
     # ECC
     # ssl_certificate      ssl/${DOMAIN}_ecc.cert
     # ssl_certificate_key  ssl/${DOMAIN}_ecc.key;
