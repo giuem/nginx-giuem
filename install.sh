@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+# sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 NGINX=1.15.5
 OPENSSL=1.1.1
@@ -43,16 +43,12 @@ _download_patch() {
 
 _openssl() {
     pushd lib
-    if [ ! -d "openssl-${OPENSSL}" ]; then
-        # remove old version
-        rm -rf openssl-*
-    fi
+    rm -rf openssl-*
     wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz
     tar zxf openssl-${OPENSSL}.tar.gz
     rm openssl-${OPENSSL}.tar.gz
     pushd openssl-${OPENSSL}
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
-    patch -p1 < ${DIR}/patch/hakasenyang/openssl-ignore_log_strict-sni.patch
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-${OPENSSL}-chacha_draft.patch
     popd
     popd
