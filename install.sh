@@ -46,10 +46,10 @@ _openssl() {
     if [ ! -d "openssl-${OPENSSL}" ]; then
         # remove old version
         rm -rf openssl-*
-        wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz
-        tar zxf openssl-${OPENSSL}.tar.gz
-        rm openssl-${OPENSSL}.tar.gz
     fi
+    wget -cnv https://www.openssl.org/source/openssl-${OPENSSL}.tar.gz -O openssl-${OPENSSL}.tar.gz
+    tar zxf openssl-${OPENSSL}.tar.gz
+    rm openssl-${OPENSSL}.tar.gz
     pushd openssl-${OPENSSL}
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-ignore_log_strict-sni.patch
