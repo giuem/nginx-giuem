@@ -176,7 +176,7 @@ _nginx_build() {
     pushd src
     patch -p1 < ${DIR}/patch/kn007/nginx.patch
     patch -p1 < ${DIR}/patch/kn007/nginx_auto_using_PRIORITIZE_CHACHA.patch
-    patch -p1 < ${DIR}/patch/hakasenyang/nginx_1.15.4_strict-sni.patch
+    patch -p1 < ${DIR}/patch/hakasenyang/nginx_strict-sni.patch
     # patch -p1 < ${DIR}/patch/hakasenyang/remove_nginx_server_header.patch
 
     ./configure --build=nginx-giuem \
