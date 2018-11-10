@@ -10,7 +10,7 @@ Test page: [https://ssl.giuem.com](https://ssl.giuem.com)
 
 ## Overview
 
-* **Nginx: 1.15.4**
+* **Nginx: 1.15.6**
   * SPDY
   * HTTP2 HPACK Encoding
   * Dynamic TLS Record

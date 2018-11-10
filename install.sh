@@ -3,7 +3,7 @@ set -e
 
 # sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
-NGINX=1.15.5
+NGINX=1.15.6
 OPENSSL=1.1.1
 PCRE=8.42
 JEMALLOC=5.1.0
