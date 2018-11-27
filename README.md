@@ -37,7 +37,9 @@ Test page: [https://ssl.giuem.com](https://ssl.giuem.com)
 * 18.04
 * 16.04
 
-More distributions WIP...
+### Centos
+
+* 7 (experiment)
 
 ## Usage
 

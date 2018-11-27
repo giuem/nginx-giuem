@@ -14,6 +14,8 @@ matrix:
       env: DISTRO=ubuntu:18.04
     - name: "Ubuntu 16.04"
       env: DISTRO=ubuntu:16.04
+    - name: "Centos 7"
+      env: DISTRO=centos:7
 
 before_install:
   - docker pull ${DISTRO}

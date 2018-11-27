@@ -15,6 +15,17 @@ NGINX_MODULES=""
 mkdir -p ${DIR}/patch ${DIR}/lib ${DIR}/src
 cd $DIR
 
+get_distribution() {
+    lsb_dist=""
+    if [ -r /etc/os-release ]; then
+        lsb_dist="$(. /etc/os-release && echo "$ID")"
+    fi
+    echo "$lsb_dist"
+}
+
+lsb_dist=$( get_distribution )
+lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
+
 command_exists() {
     command -v "$@" > /dev/null 2>&1
 }
@@ -28,14 +39,30 @@ popd () {
 }
 
 sync_git_repo () {
-    git -C $1 fetch && git -C $1 reset --hard origin/master
-    return $?
+    if [ ! -d $1 ]; then
+        return 128
+    fi
+    pushd $1
+    git fetch && git reset --hard origin/master
+    popd
 }
 
 _install_dependencies() {
-    pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
-    apt-get update -qq > /dev/null
-    apt-get install -y -qq ${pre_reqs} > /dev/null
+    case "$lsb_dist" in
+    ubuntu)
+        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
+        apt-get update -qq > /dev/null
+        apt-get install -y -qq ${pre_reqs} > /dev/null
+    ;;
+    centos)
+        pre_reqs="gcc gcc-c++ make cmake patch autoconf automake git unzip libuuid-devel libatomic libatomic_ops-devel wget libtool libmaxminddb-devel gd-devel geoip-devel bzip2"
+        yum install -y -q ${pre_reqs}
+    ;;
+    *)
+        echo "Unsupported distro"
+        exit 1
+    ;;
+    esac
     echo "install dependencies done"
 }
 
@@ -154,6 +181,8 @@ _ngx_echo() {
 }
 
 _nginx_build() {
+    groups www-data > /dev/null || (groupadd www-data && useradd -g www-data www-data)
+
     _install_dependencies
     _download_patch
 
