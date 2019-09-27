@@ -10,18 +10,17 @@ Test page: [https://ssl.giuem.com](https://ssl.giuem.com)
 
 ## Overview
 
-* **Nginx: 1.15.7**
+* **Nginx: 1.17.4**
   * SPDY
   * HTTP2 HPACK Encoding
   * Dynamic TLS Record
-  * Auto using SSL_OP_PRIORITIZE_CHACHA
   * Strict SNI (You need to configure at least two ssl servers. If you have only one server, create another as placeholder)
-* **OpenSSL: 1.1.1**
+* **OpenSSL: 1.1.1d**
   * TLS 1.3 (draft 23, 26, 28, final)
   * BoringSSL's Equal Preference Patch
 * **Zlib: Cloudflare Mod**
-* Pcre: 8.42
-* Jemalloc: 5.1.0
+* Pcre: 8.43
+* Jemalloc: 5.2.1
 * Nginx Modules:
   * ngx_brotli
   * ngx_devel_kit

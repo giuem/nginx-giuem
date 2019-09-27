@@ -3,10 +3,10 @@ set -e
 
 # sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
-NGINX=1.15.8
-OPENSSL=1.1.1a
-PCRE=8.42
-JEMALLOC=5.1.0
+NGINX=1.17.4
+OPENSSL=1.1.1d
+PCRE=8.43
+JEMALLOC=5.2.1
 
 DIR="$( cd "$( dirname "$0" )" && pwd )/.nginx"
 CPUS=$(($(grep -c ^processor /proc/cpuinfo)+1))
@@ -88,7 +88,7 @@ _openssl() {
 
 _brotli() {
     pushd lib
-    sync_git_repo ngx_brotli ||git clone https://github.com/eustas/ngx_brotli
+    sync_git_repo ngx_brotli || git clone https://github.com/google/ngx_brotli
     pushd ngx_brotli
     git submodule update --init
     popd
@@ -204,8 +204,8 @@ _nginx_build() {
     mv nginx-${NGINX} ${DIR}/src
     pushd src
     patch -p1 < ${DIR}/patch/kn007/nginx.patch
-    patch -p1 < ${DIR}/patch/kn007/nginx_auto_using_PRIORITIZE_CHACHA.patch
-    patch -p1 < ${DIR}/patch/hakasenyang/nginx_strict-sni.patch
+    patch -p1 < ${DIR}/patch/hakasenyang/nginx_strict-sni_1.15.10.patch
+    # patch -p1 < ${DIR}/patch/hakasenyang/nginx_hpack_push_fix.patch
     # patch -p1 < ${DIR}/patch/hakasenyang/remove_nginx_server_header.patch
 
     ./configure --build=nginx-giuem \
