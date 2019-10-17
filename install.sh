@@ -50,7 +50,8 @@ sync_git_repo () {
 _install_dependencies() {
     case "$lsb_dist" in
     ubuntu)
-        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget curl"
+        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget curl perl golang-go"
+        add-apt-repository -y ppa:longsleep/golang-backports
         apt-get update -qq > /dev/null
         apt-get install -y -qq ${pre_reqs} > /dev/null
     ;;
