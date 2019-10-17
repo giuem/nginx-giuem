@@ -65,6 +65,7 @@ _install_dependencies() {
     ;;
     esac
     command_exists rustup || curl https://sh.rustup.rs -sSf | sh -s -- -y
+    source $HOME/.cargo/env
     echo "install dependencies done"
 }
 
