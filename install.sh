@@ -196,7 +196,7 @@ _nginx_build() {
     _install_dependencies
     _download_patch
     _quiche
-    _openssl
+    # _openssl
     _brotli
     _zilb
     _pcre
@@ -221,8 +221,7 @@ _nginx_build() {
     ./configure --build=nginx-giuem \
     --with-cc-opt='-m64 -march=native -DTCP_FASTOPEN=23 -g -O3 -fPIE -fstack-protector-strong -flto -fuse-ld=gold --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wno-unused-parameter -fno-strict-aliasing -fPIC -D_FORTIFY_SOURCE=2 -gsplit-dwarf' \
     --with-ld-opt='-L/usr/local/lib -lrt -ljemalloc -Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now -fPIC' \
-    --with-openssl=${DIR}/lib/openssl-${OPENSSL} \
-    --with-openssl-opt='zlib enable-ec_nistp_64_gcc_128 enable-weak-ssl-ciphers no-ssl3 -march=native -ljemalloc -Wl,-flto' \
+    --with-openssl=${DIR}/lib/quiche/deps/boringssl \
     --with-zlib=${DIR}/lib/zlib \
     --with-zlib-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
     --with-pcre=${DIR}/lib/pcre-${PCRE} \
