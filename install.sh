@@ -48,15 +48,14 @@ sync_git_repo () {
 }
 
 _install_dependencies() {
-    command_exists rustup || curl https://sh.rustup.rs -sSf | sh
     case "$lsb_dist" in
     ubuntu)
-        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
+        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget curl"
         apt-get update -qq > /dev/null
         apt-get install -y -qq ${pre_reqs} > /dev/null
     ;;
     centos)
-        pre_reqs="gcc gcc-c++ make cmake patch autoconf automake git unzip libuuid-devel libatomic libatomic_ops-devel wget libtool libmaxminddb-devel gd-devel geoip-devel bzip2"
+        pre_reqs="gcc gcc-c++ make cmake patch autoconf automake git unzip libuuid-devel libatomic libatomic_ops-devel wget curl libtool libmaxminddb-devel gd-devel geoip-devel bzip2"
         yum install -y -q ${pre_reqs}
     ;;
     *)
@@ -64,6 +63,7 @@ _install_dependencies() {
         exit 1
     ;;
     esac
+    command_exists rustup || curl https://sh.rustup.rs -sSf | sh
     echo "install dependencies done"
 }
 
