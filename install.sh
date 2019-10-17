@@ -48,6 +48,7 @@ sync_git_repo () {
 }
 
 _install_dependencies() {
+    command_exists rustup || curl https://sh.rustup.rs -sSf | sh
     case "$lsb_dist" in
     ubuntu)
         pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget"
