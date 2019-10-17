@@ -63,7 +63,7 @@ _install_dependencies() {
         exit 1
     ;;
     esac
-    command_exists rustup || curl https://sh.rustup.rs -sSf | sh
+    command_exists rustup || curl https://sh.rustup.rs -sSf | sh -y
     echo "install dependencies done"
 }
 
