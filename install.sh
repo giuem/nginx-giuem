@@ -203,7 +203,7 @@ _nginx_build() {
     rm -rf ${DIR}/src nginx-${NGINX}.tar.gz
     mv nginx-${NGINX} ${DIR}/src
     pushd src
-    patch -p1 < ${DIR}/patch/kn007/nginx.patch
+    patch -p1 < ${DIR}/patch/kn007/nginx_with_quic.patch
     patch -p1 < ${DIR}/patch/hakasenyang/nginx_strict-sni_1.15.10.patch
     # patch -p1 < ${DIR}/patch/hakasenyang/nginx_hpack_push_fix.patch
     # patch -p1 < ${DIR}/patch/hakasenyang/remove_nginx_server_header.patch
