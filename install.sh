@@ -73,6 +73,15 @@ _download_patch() {
     popd
 }
 
+_quiche() {
+    pushd lib
+    sync_git_repo quiche || git clone --recursive https://github.com/cloudflare/quiche
+    pushd quiche
+    git submodule update --init
+    popd
+    popd
+}
+
 _openssl() {
     pushd lib
     rm -rf openssl-*
@@ -185,7 +194,7 @@ _nginx_build() {
 
     _install_dependencies
     _download_patch
-
+    _quiche
     _openssl
     _brotli
     _zilb
@@ -218,6 +227,7 @@ _nginx_build() {
     --with-pcre=${DIR}/lib/pcre-${PCRE} \
     --with-pcre-opt='-g -O3 -fPIC -m64 -march=native -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
     --with-pcre-jit \
+    --with-quiche=${DIR}/lib/quiche \
     --prefix=/usr/share/nginx \
     --sbin-path=/usr/sbin/nginx \
     --conf-path=/etc/nginx/nginx.conf \
@@ -242,7 +252,7 @@ _nginx_build() {
     --with-http_ssl_module \
     --with-http_v2_module \
     --with-http_v2_hpack_enc \
-    --with-http_spdy_module \
+    --with-http_v3_module \
     --with-http_realip_module \
     --with-http_geoip_module \
     --with-http_addition_module \
