@@ -61,7 +61,7 @@ _install_dependencies() {
         yum install -y -q ${pre_reqs}
         rpm --import https://mirror.go-repo.io/centos/RPM-GPG-KEY-GO-REPO
         curl -s https://mirror.go-repo.io/centos/go-repo.repo | tee /etc/yum.repos.d/go-repo.repo
-        yum install golang
+        yum install -y -q golang
     ;;
     *)
         echo "Unsupported distro"
