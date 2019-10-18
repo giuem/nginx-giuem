@@ -50,14 +50,18 @@ sync_git_repo () {
 _install_dependencies() {
     case "$lsb_dist" in
     ubuntu)
-        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget curl perl golang-go"
-        add-apt-repository -y ppa:longsleep/golang-backports
+        pre_reqs="build-essential cmake autoconf automake git unzip uuid-dev libatomic1 libatomic-ops-dev libgd-dev libtool libgeoip-dev wget curl perl software-properties-common"
         apt-get update -qq > /dev/null
         apt-get install -y -qq ${pre_reqs} > /dev/null
+        add-apt-repository -y ppa:longsleep/golang-backports > /dev/null
+        apt-get install -y -qq golang-go > /dev/null
     ;;
     centos)
-        pre_reqs="gcc gcc-c++ make cmake patch autoconf automake git unzip libuuid-devel libatomic libatomic_ops-devel wget curl libtool libmaxminddb-devel gd-devel geoip-devel bzip2"
+        pre_reqs="gcc gcc-c++ make cmake patch autoconf automake git unzip libuuid-devel libatomic libatomic_ops-devel wget curl libtool libmaxminddb-devel gd-devel geoip-devel bzip2 perl"
         yum install -y -q ${pre_reqs}
+        rpm --import https://mirror.go-repo.io/centos/RPM-GPG-KEY-GO-REPO
+        curl -s https://mirror.go-repo.io/centos/go-repo.repo | tee /etc/yum.repos.d/go-repo.repo
+        yum install golang
     ;;
     *)
         echo "Unsupported distro"
