@@ -4,7 +4,7 @@ set -e
 # sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 NGINX=1.17.6
-OPENSSL=1.1.1d
+OPENSSL=1.1.1h
 PCRE=8.43
 JEMALLOC=5.2.1
 
@@ -80,7 +80,7 @@ _openssl() {
     tar zxf openssl-${OPENSSL}.tar.gz
     rm openssl-${OPENSSL}.tar.gz
     pushd openssl-${OPENSSL}
-    patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
+    # patch -p1 < ${DIR}/patch/hakasenyang/openssl-equal-${OPENSSL}_ciphers.patch
     patch -p1 < ${DIR}/patch/hakasenyang/openssl-${OPENSSL}-chacha_draft.patch
     popd
     popd
